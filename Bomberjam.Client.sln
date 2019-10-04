@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bomberjam.Bot", "Bomberjam.Bot\Bomberjam.Bot.csproj", "{614B7DE4-03A2-4E97-A4B4-3F52E2D6BC73}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bomberjam.Client", "Bomberjam.Client\Bomberjam.Client.csproj", "{59EE750B-5F88-437C-A9CC-2E53481A639B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{614B7DE4-03A2-4E97-A4B4-3F52E2D6BC73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{614B7DE4-03A2-4E97-A4B4-3F52E2D6BC73}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{614B7DE4-03A2-4E97-A4B4-3F52E2D6BC73}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{614B7DE4-03A2-4E97-A4B4-3F52E2D6BC73}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59EE750B-5F88-437C-A9CC-2E53481A639B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59EE750B-5F88-437C-A9CC-2E53481A639B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59EE750B-5F88-437C-A9CC-2E53481A639B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59EE750B-5F88-437C-A9CC-2E53481A639B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
