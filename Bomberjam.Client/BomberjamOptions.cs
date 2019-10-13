@@ -5,12 +5,23 @@ namespace Bomberjam.Client
 {
     public class BomberjamOptions
     {
-        public Uri ServerUrl { get; set; }
+        public GameMode Mode { get; set; }
+        
+        public Func<GameState, GameAction> BotFunc { get; set; }
 
         public string PlayerName { get; set; }
+        
+        public string ServerName { get; set; }
+        
+        public int  ServerPort { get; set; }
+        
+        public string RoomId { get; set; }
+        
+        internal bool IsSilent { get; set; }
 
-        public bool IsSilent { get; set; }
-
-        public Func<GameState, string> BotFunc { get; set; }
+        internal Uri ServerUri
+        {
+            get => new Uri($"ws://{this.ServerName}:{this.ServerPort}", UriKind.Absolute);
+        }
     }
 }

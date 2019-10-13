@@ -21,7 +21,7 @@ namespace Bomberjam.Client
         {
             this._options = options;
             this._gameEndedTcs = new TaskCompletionSource<bool>();
-            this._client = new Colyseus.Client(options.ServerUrl);
+            this._client = new Colyseus.Client(options.ServerUri);
 
             this._client.OnOpen += (sender, e) =>
             {
@@ -46,10 +46,11 @@ namespace Bomberjam.Client
         {
             var optionsDict = new Dictionary<string, object>
             {
-                { "name", this._options.PlayerName },
                 { "spectate", false },
-                { "training", true },
-                { "createNewRoom", !this._options.IsSilent },
+                { "name", this._options.PlayerName },
+                { "roomId", this._options.RoomId },
+                { "training", this._options.Mode == GameMode.Training },
+                { "createNewRoom", this._options.Mode == GameMode.Training && !this._options.IsSilent },
             };
 
             this._room?.LeaveAsync();
@@ -105,18 +106,21 @@ namespace Bomberjam.Client
             {
                 if (this._options.BotFunc != null)
                 {
-                    var botActionResut = await Task.Run(() => this._options.BotFunc(state));
-
-                    if (!string.IsNullOrWhiteSpace(botActionResut))
-                    {
-                        await SendActionToRoom(state, botActionResut);
-                    }
+                    var botAction = await Task.Run(() => this._options.BotFunc(state));
+                    var botActionStr = GameActionToString(botAction);
+                    
+                    await SendActionToRoom(state, botActionStr);
                 }
             }
             catch (Exception ex)
             {
                 this.Print($"Bot logic error occured: {Environment.NewLine}{ex}");
             }
+        }
+
+        private static string GameActionToString(GameAction action)
+        {
+            return Enum.GetName(action.GetType(), action).ToLowerInvariant();
         }
 
         private Task SendActionToRoom(GameState state, string action)
@@ -149,9 +153,9 @@ namespace Bomberjam.Client
 
         private void OpenGameInBrowser()
         {
-            var scheme = this._options.ServerUrl.Scheme == "wss" ? "https" : "http";
-            var host = this._options.ServerUrl.Host;
-            var port = this._options.ServerUrl.Port;
+            var scheme = this._options.ServerUri.Scheme == "wss" ? "https" : "http";
+            var host = this._options.ServerUri.Host;
+            var port = this._options.ServerUri.Port;
             var viewerUrlStr = $"{scheme}://{host}:{port}/games/{this._room.Id}";
 
             OpenInBrowser(viewerUrlStr);
