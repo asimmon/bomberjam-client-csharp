@@ -8,7 +8,7 @@ using Bomberjam.Client.Colyseus;
 
 namespace Bomberjam.Client
 {
-    public class EventBasedClientWebSocket : IDisposable
+    internal class EventBasedClientWebSocket : IDisposable
     {
         private static readonly ISet<string> SuppportedSchemes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {

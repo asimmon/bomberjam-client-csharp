@@ -5,7 +5,7 @@ using Type = System.Type;
 
 namespace Bomberjam.Client.Colyseus.Serializer
 {
-    public class SchemaSerializer<T> : ISerializer<T> // where T : Colyseus.Schema.Schema
+    internal class SchemaSerializer<T> : ISerializer<T> // where T : Colyseus.Schema.Schema
     {
         protected T state;
 

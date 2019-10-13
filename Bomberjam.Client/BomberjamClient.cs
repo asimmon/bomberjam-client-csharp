@@ -8,7 +8,7 @@ using Bomberjam.Client.Game;
 
 namespace Bomberjam.Client
 {
-    public class BomberjamClient : IDisposable
+    internal class BomberjamClient : IDisposable
     {
         private const string ApplicationName = "bomberjam";
 

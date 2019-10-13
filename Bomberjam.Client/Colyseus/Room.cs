@@ -9,7 +9,7 @@ using Hackathon.Framework.GameDevWare.Serialization;
 
 namespace Bomberjam.Client.Colyseus
 {
-    public class RoomAvailable
+    internal class RoomAvailable
     {
         public string roomId { get; set; }
         public uint clients { get; set; }
@@ -17,7 +17,7 @@ namespace Bomberjam.Client.Colyseus
         public object metadata { get; set; }
     }
 
-    public interface IRoom : IDisposable
+    internal interface IRoom : IDisposable
     {
         string Id { get; set; }
         Dictionary<string, object> Options { get; }
@@ -26,7 +26,7 @@ namespace Bomberjam.Client.Colyseus
         Task CloseAsync();
     }
 
-    public class Room<T> : IRoom
+    internal class Room<T> : IRoom
     {
         private Connection _connection;
         private ISerializer<T> _serializer;

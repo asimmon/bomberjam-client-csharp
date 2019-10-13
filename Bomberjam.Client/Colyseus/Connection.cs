@@ -6,7 +6,7 @@ using Hackathon.Framework.GameDevWare.Serialization;
 
 namespace Bomberjam.Client.Colyseus
 {
-    public class Connection : EventBasedClientWebSocket
+    internal class Connection : EventBasedClientWebSocket
     {
         private readonly Queue<byte[]> _queuedUnsentMessages;
 

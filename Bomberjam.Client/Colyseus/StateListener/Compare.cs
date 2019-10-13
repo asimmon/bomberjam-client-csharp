@@ -5,14 +5,14 @@ using Hackathon.Framework.GameDevWare.Serialization;
 
 namespace Bomberjam.Client.Colyseus.StateListener
 {
-	public struct PatchObject
+	internal struct PatchObject
 	{
 		public string[] path;
 		public string operation; // : "add" | "remove" | "replace";
 		public object value;
 	}
 
-	public class Compare
+	internal class Compare
 	{
 
 		public static PatchObject[] GetPatchList(IndexedDictionary<string, object> tree1, IndexedDictionary<string, object> tree2)

@@ -2,7 +2,7 @@ using System;
 
 namespace Bomberjam.Client.Colyseus
 {
-    public class ExceptionEventArgs : EventArgs
+    internal class ExceptionEventArgs : EventArgs
     {
         public Exception Exception { get; }
 

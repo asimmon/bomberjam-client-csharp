@@ -3,7 +3,7 @@
 	/// <summary>
 	/// Colyseus server protocol codes mapping.
 	/// </summary>
-	public static class Protocol
+	internal static class Protocol
 	{
 		/// <summary>When client receives its unique id.</summary>
 		public static int USER_ID = 1;

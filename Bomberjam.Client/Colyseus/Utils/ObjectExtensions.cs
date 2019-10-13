@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Bomberjam.Client.Colyseus.Utils
 {
-    public static class ObjectExtensions
+	internal static class ObjectExtensions
     {
         public static T ToObject<T>(object source) where T : class, new()
         {

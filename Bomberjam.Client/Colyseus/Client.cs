@@ -9,7 +9,7 @@ using Hackathon.Framework.GameDevWare.Serialization;
 
 namespace Bomberjam.Client.Colyseus
 {
-    public class Client : IDisposable
+    internal class Client : IDisposable
     {
         private readonly UriBuilder _endpoint;
         private readonly Connection _connection;

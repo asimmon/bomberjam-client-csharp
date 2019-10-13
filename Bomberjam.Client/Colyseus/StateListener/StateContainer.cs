@@ -8,21 +8,21 @@ namespace Bomberjam.Client.Colyseus.StateListener
 	using PatchListener = Listener<Action<DataChange>>;
 	using FallbackPatchListener = Listener<Action<PatchObject>>;
 
-	public struct DataChange
+	internal struct DataChange
 	{
 		public Dictionary<string, string> path;
 		public string operation; // : "add" | "remove" | "replace";
 		public object value;
 	}
 
-	public struct Listener<T>
+	internal struct Listener<T>
 	{
 		public T callback;
 		public Regex[] rules;
 		public string[] rawRules;
 	}
 
-	public class StateContainer
+	internal class StateContainer
 	{
 		public IndexedDictionary<string, object> state;
 		private List<PatchListener> listeners;

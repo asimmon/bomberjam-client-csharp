@@ -1,6 +1,6 @@
 namespace Bomberjam.Client.Colyseus.Serializer
 {
-	public interface ISerializer<T>
+	internal interface ISerializer<T>
 	{
 		void SetState(byte[] data);
 		T GetState();

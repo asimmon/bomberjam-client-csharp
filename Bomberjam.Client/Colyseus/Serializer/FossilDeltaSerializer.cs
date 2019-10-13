@@ -5,7 +5,7 @@ using Hackathon.Framework.GameDevWare.Serialization;
 
 namespace Bomberjam.Client.Colyseus.Serializer
 {
-	public class FossilDeltaSerializer : ISerializer<IndexedDictionary<string, object>>
+	internal class FossilDeltaSerializer : ISerializer<IndexedDictionary<string, object>>
 	{
 		public StateContainer State = new StateContainer(new IndexedDictionary<string, object>());
 		protected byte[] previousState = null;
