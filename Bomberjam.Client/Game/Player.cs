@@ -37,12 +37,15 @@ namespace Bomberjam.Client.Game {
 		public bool alive = false;
 
 		[Type(9, "int8")]
-		public int lives = 0;
+		public int respawning = 0;
 
 		[Type(10, "int16")]
 		public short score = 0;
 
-		[Type(11, "boolean")]
+		[Type(11, "int32")]
+		public int color = 0;
+
+		[Type(12, "boolean")]
 		public bool hasWon = false;
 	}
 }

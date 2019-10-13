@@ -10,7 +10,7 @@ namespace Bomberjam.Client
 {
     public class BomberjamClient : IDisposable
     {
-        private const string ApplicationName = "bomberman";
+        private const string ApplicationName = "bomberjam";
 
         private readonly TaskCompletionSource<bool> _gameEndedTcs;
         private readonly BomberjamOptions _options;
