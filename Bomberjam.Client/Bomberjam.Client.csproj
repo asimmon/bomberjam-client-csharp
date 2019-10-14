@@ -4,13 +4,13 @@
     </PropertyGroup>
     
     <PropertyGroup>
-        <TargetFramework>netstandard2.1</TargetFramework>
+        <TargetFramework>netstandard2.0</TargetFramework>
     </PropertyGroup>
     
     <PropertyGroup>
         <PackageId>Bomberjam.Client</PackageId>
         <Title>Bomberjam.Client</Title>
-        <Version>1.0.0-alpha</Version>
+        <Version>1.0.1-alpha</Version>
         <Authors>Anthony Simmon</Authors>
         <Company>GSoft</Company>
         <PackageLicenseExpression>ISC</PackageLicenseExpression>

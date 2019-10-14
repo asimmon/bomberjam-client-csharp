@@ -27,7 +27,7 @@ namespace Hackathon.Framework.GameDevWare.Serialization.Metadata
 {
 	internal static class GettersAndSetters
 	{
-#if !NET_STANDARD_2_0
+#if !NETSTANDARD2_0
 		private static readonly bool AotRuntime;
 
 		private static readonly Dictionary<MemberInfo, Func<object, object>> ReadFunctions;
@@ -35,7 +35,7 @@ namespace Hackathon.Framework.GameDevWare.Serialization.Metadata
 		private static readonly Dictionary<MemberInfo, Func<object>> ConstructorFunctions;
 #endif
 
-#if !NET_STANDARD_2_0
+#if !NETSTANDARD2_0
 		static GettersAndSetters()
 		{
 #if ((UNITY_WEBGL || UNITY_IOS || ENABLE_IL2CPP) && !UNITY_EDITOR)
@@ -55,7 +55,7 @@ namespace Hackathon.Framework.GameDevWare.Serialization.Metadata
 			getFn = null;
 			setFn = null;
 
-#if NET_STANDARD_2_0
+#if NETSTANDARD2_0
 			return false;
 #else
 			if (AotRuntime)
@@ -117,7 +117,7 @@ namespace Hackathon.Framework.GameDevWare.Serialization.Metadata
 			getFn = null;
 			setFn = null;
 
-#if NET_STANDARD_2_0
+#if NETSTANDARD2_0
 			return false;
 #else
 
@@ -180,7 +180,7 @@ namespace Hackathon.Framework.GameDevWare.Serialization.Metadata
 
 			ctrFn = null;
 
-#if NET_STANDARD_2_0
+#if NETSTANDARD2_0
 			return false;
 #else
 			if (AotRuntime || type.IsAbstract || type.IsInterface)
