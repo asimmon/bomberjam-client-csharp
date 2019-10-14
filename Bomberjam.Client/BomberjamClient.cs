@@ -16,12 +16,14 @@ namespace Bomberjam.Client
         private readonly BomberjamOptions _options;
         private readonly Colyseus.Client _client;
         private Room<GameState> _room;
+        private int _tickCounter;
 
         public BomberjamClient(BomberjamOptions options)
         {
             this._options = options;
             this._gameEndedTcs = new TaskCompletionSource<bool>();
             this._client = new Colyseus.Client(options.ServerUri);
+            this._tickCounter = 0;
 
             this._client.OnOpen += (sender, e) =>
             {
@@ -102,6 +104,14 @@ namespace Bomberjam.Client
 
         private async Task RunBot(GameState state)
         {
+            this._tickCounter++;
+
+            // In training mode, skip first tick to help visualize the game from the beginning
+            if (this._options.Mode == GameMode.Training && this._tickCounter == 1)
+            {
+                return;
+            }
+            
             try
             {
                 if (this._options.BotFunc != null)
