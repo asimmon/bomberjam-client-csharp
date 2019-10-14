@@ -23,11 +23,8 @@ namespace Bomberjam.Bot
             BomberjamRunner.Run(new BomberjamOptions
             {
                 Mode = GameMode.Training,
-                BotFunc = GenerateRandomAction,
-                PlayerName = "player",
-                ServerName = "localhost",
-                ServerPort = 4321,
-                RoomId = ""
+                JsonConfigPath = "config.json",
+                BotFunc = GenerateRandomAction
             });
         }
         

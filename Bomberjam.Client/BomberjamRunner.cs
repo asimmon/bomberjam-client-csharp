@@ -16,6 +16,11 @@ namespace Bomberjam.Client
         
         private BomberjamRunner(BomberjamOptions options)
         {
+            if (options == null)
+                throw new ArgumentNullException(nameof(options));
+            
+            options.Validate();
+            
             this._options = options;
             this._playerCount = this._options.Mode == GameMode.Training ? 4 : 1;
         }
@@ -63,6 +68,7 @@ namespace Bomberjam.Client
             var newOptions = new BomberjamOptions
             {
                 Mode = this._options.Mode,
+                JsonConfigPath = this._options.JsonConfigPath,
                 BotFunc = this._options.BotFunc,
                 PlayerName = this._options.PlayerName,
                 ServerName = this._options.ServerName,
