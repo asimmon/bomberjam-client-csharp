@@ -77,7 +77,6 @@ namespace Bomberjam.Client
             try
             {
                 var dir = GetExecutableDirectory();
-                Console.WriteLine(dir.FullName);
 
                 while (dir != null)
                 {
