@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Reflection;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using Bomberjam.Client.Game;
@@ -10,10 +11,10 @@ namespace Bomberjam.Client
     {
         public GameMode Mode { get; set; }
         
-        public string JsonConfigPath { get; set; }
-        
         public Func<GameState, GameAction> BotFunc { get; set; }
-
+        
+        internal string JsonConfigPath { get; set; }
+        
         internal string PlayerName { get; set; }
         
         internal string ServerName { get; set; }
@@ -34,9 +35,6 @@ namespace Bomberjam.Client
             if (this.BotFunc == null)
                 throw new ArgumentException("Missing bot function.");
             
-            if (string.IsNullOrWhiteSpace(this.JsonConfigPath))
-                throw new ArgumentException("Missing config.json location.");
-
             this.ParseJsonConfig();
             
             if (string.IsNullOrWhiteSpace(this.PlayerName))
@@ -52,22 +50,56 @@ namespace Bomberjam.Client
                 throw new ArgumentException("Missing tournament room ID.");
         }
 
+        private const string JsonConfigFileName = "config.json";
+
         private void ParseJsonConfig()
         {
-            if (!File.Exists(this.JsonConfigPath))
-                throw new ArgumentException($"File {this.JsonConfigPath} does not exists.");
+            this.JsonConfigPath = LocateJsonConfigPath();
+            Console.WriteLine($"Found {JsonConfigFileName} file: {this.JsonConfigPath}");
             
             JsonConfig config;
             using (var stream = File.OpenRead(this.JsonConfigPath))
                 config = JsonConfigSerializer.ReadObject(stream) as JsonConfig;
             
             if (config == null)
-                throw new ArgumentException("The specified config.json contents is invalid. Check the documentation for a valid example.");
+                throw new ArgumentException($"The specified {JsonConfigFileName} contents is invalid. Check the documentation for a valid example.");
 
             this.PlayerName = config.PlayerName;
             this.ServerName = config.ServerName;
             this.ServerPort = config.ServerPort;
             this.RoomId = config.RoomId;
+        }
+
+        private static string LocateJsonConfigPath()
+        {
+            Exception innerEx = null;
+            
+            try
+            {
+                var dir = GetExecutableDirectory();
+                Console.WriteLine(dir.FullName);
+
+                while (dir != null)
+                {
+                    var jsonConfigPath = Path.Combine(dir.FullName, JsonConfigFileName);
+                    if (File.Exists(jsonConfigPath))
+                        return jsonConfigPath;
+                
+                    dir = dir.Parent;
+                }
+            }
+            catch (Exception ex)
+            {
+                innerEx = ex;
+            }
+            
+            throw new Exception($"Could not find {JsonConfigFileName} in the executable directory or its parents.", innerEx);
+        }
+        
+        private static DirectoryInfo GetExecutableDirectory()
+        {
+            var location = new Uri(Assembly.GetEntryAssembly().GetName().CodeBase);
+            return new FileInfo(location.AbsolutePath).Directory;
         }
         
         private static readonly DataContractJsonSerializer JsonConfigSerializer = new DataContractJsonSerializer(typeof(JsonConfig));

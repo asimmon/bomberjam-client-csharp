@@ -23,7 +23,6 @@ namespace Bomberjam.Bot
             BomberjamRunner.Run(new BomberjamOptions
             {
                 Mode = GameMode.Training,
-                JsonConfigPath = "config.json",
                 BotFunc = GenerateRandomAction
             });
         }
