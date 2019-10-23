@@ -16,14 +16,13 @@ namespace Bomberjam.Client
         private readonly BomberjamOptions _options;
         private readonly Colyseus.Client _client;
         private Room<GameState> _room;
-        private int _tickCounter;
+        private string _sessionId;
 
         public BomberjamClient(BomberjamOptions options)
         {
             this._options = options;
             this._gameEndedTcs = new TaskCompletionSource<bool>();
             this._client = new Colyseus.Client(options.ServerUri);
-            this._tickCounter = 0;
 
             this._client.OnOpen += (sender, e) =>
             {
@@ -67,7 +66,7 @@ namespace Bomberjam.Client
             this._room.OnJoin += (sender, e) =>
             {
                 this.Print($"Room {this._room.Id} joined");
-                // this._sessionId = this._room.SessionId;
+                this._sessionId = this._room.SessionId;
 
                 if (!this._options.IsSilent)
                 {
@@ -104,21 +103,16 @@ namespace Bomberjam.Client
 
         private async Task RunBot(GameState state)
         {
-            this._tickCounter++;
-
-            // In training mode, skip first tick to help visualize the game from the beginning
-            if (this._options.Mode == GameMode.Training && this._tickCounter == 1)
-            {
+            if (IsGameWaitingForPlayers(state) || IsGameFinished(state) || state.isSimulationPaused)
                 return;
-            }
-            
+
             try
             {
                 if (this._options.BotFunc != null)
                 {
-                    var botAction = await Task.Run(() => this._options.BotFunc(state));
+                    var botAction = await Task.Run(() => this._options.BotFunc(state, this._sessionId));
                     var botActionStr = GameActionToString(botAction);
-                    
+
                     await SendActionToRoom(state, botActionStr);
                 }
             }
@@ -126,6 +120,11 @@ namespace Bomberjam.Client
             {
                 this.Print($"Bot logic error occured: {Environment.NewLine}{ex}");
             }
+        }
+
+        private static bool IsGameWaitingForPlayers(GameState state)
+        {
+            return state.state == -1;
         }
 
         private static string GameActionToString(GameAction action)

@@ -11,7 +11,7 @@ namespace Bomberjam.Client
     {
         public GameMode Mode { get; set; }
         
-        public Func<GameState, GameAction> BotFunc { get; set; }
+        public Func<GameState, string, GameAction> BotFunc { get; set; }
         
         internal string JsonConfigPath { get; set; }
         

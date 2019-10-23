@@ -26,8 +26,8 @@ namespace Bomberjam.Bot
                 BotFunc = GenerateRandomAction
             });
         }
-        
-        private static GameAction GenerateRandomAction(GameState state)
+
+        private static GameAction GenerateRandomAction(GameState state, string myPlayerId)
         {
             return AllActions[Rng.Next(AllActions.Length)];
         }
