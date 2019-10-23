@@ -37,18 +37,24 @@ namespace Bomberjam.Client
             try
             {
                 var connectTasks = new List<Task>(this._playerCount);
+                BomberjamClient mainClient = null;
                 
                 for (var i = 0; i < this._playerCount; i++)
                 {
-                    var client = new BomberjamClient(this.CreateJoinOptions(i));
-
-                    if (this._playerCount > 0)
-                    {
-                        await Task.Delay(TimeSpan.FromSeconds(1));
-                    }
+                    var options = this.CreateJoinOptions(i);
+                    if (i > 0 && !string.IsNullOrWhiteSpace(mainClient?.RoomId))
+                        options.RoomId = mainClient.RoomId;
+                    
+                    var client = new BomberjamClient(options);
 
                     clients.Add(client);
                     connectTasks.Add(Task.Run(client.ConnectAsync));
+
+                    if (this._playerCount > 0)
+                        await Task.Delay(TimeSpan.FromSeconds(1));
+
+                    if (i == 0)
+                        mainClient = client;
                 }
 
                 await Task.WhenAll(connectTasks);

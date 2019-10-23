@@ -37,6 +37,11 @@ namespace Bomberjam.Client
             };
         }
 
+        public string RoomId
+        {
+            get => this._room?.Id;
+        }
+
         public async Task ConnectAsync()
         {
             await this._client.ConnectAsync();

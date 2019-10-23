@@ -10,7 +10,7 @@
     <PropertyGroup>
         <PackageId>Bomberjam.Client</PackageId>
         <Title>Bomberjam.Client</Title>
-        <Version>1.0.4-alpha</Version>
+        <Version>1.0.5-alpha</Version>
         <Authors>Anthony Simmon</Authors>
         <Company>GSoft</Company>
         <PackageLicenseExpression>ISC</PackageLicenseExpression>
