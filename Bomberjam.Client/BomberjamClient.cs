@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Bomberjam.Client.Colyseus;
-using Bomberjam.Client.Game;
+using Bomberjam.Client.GameSchema;
 
 namespace Bomberjam.Client
 {
@@ -15,7 +15,7 @@ namespace Bomberjam.Client
         private readonly TaskCompletionSource<bool> _gameEndedTcs;
         private readonly BomberjamOptions _options;
         private readonly Colyseus.Client _client;
-        private Room<GameState> _room;
+        private Room<GameStateSchema> _room;
         private string _sessionId;
 
         public BomberjamClient(BomberjamOptions options)
@@ -60,7 +60,7 @@ namespace Bomberjam.Client
             };
 
             this._room?.LeaveAsync();
-            this._room = await this._client.Join<GameState>(ApplicationName, optionsDict);
+            this._room = await this._client.Join<GameStateSchema>(ApplicationName, optionsDict);
             this.AddRoomEventHandlers();
         }
 
@@ -88,7 +88,7 @@ namespace Bomberjam.Client
             };
         }
 
-        private async void OnStateChangedRunBot(object sender, StateChangeEventArgs<GameState> e)
+        private async void OnStateChangedRunBot(object sender, StateChangeEventArgs<GameStateSchema> e)
         {
             if (IsGameFinished(e.State))
             {
@@ -101,12 +101,12 @@ namespace Bomberjam.Client
             }
         }
 
-        private static bool IsGameFinished(GameState state)
+        private static bool IsGameFinished(GameStateSchema state)
         {
             return state.state == 1;
         }
 
-        private async Task RunBot(GameState state)
+        private async Task RunBot(GameStateSchema state)
         {
             if (IsGameWaitingForPlayers(state) || IsGameFinished(state) || state.isSimulationPaused)
                 return;
@@ -127,7 +127,7 @@ namespace Bomberjam.Client
             }
         }
 
-        private static bool IsGameWaitingForPlayers(GameState state)
+        private static bool IsGameWaitingForPlayers(GameStateSchema state)
         {
             return state.state == -1;
         }
@@ -137,7 +137,7 @@ namespace Bomberjam.Client
             return Enum.GetName(action.GetType(), action).ToLowerInvariant();
         }
 
-        private Task SendActionToRoom(GameState state, string action)
+        private Task SendActionToRoom(GameStateSchema state, string action)
         {
             var res = new Dictionary<string, object>
             {

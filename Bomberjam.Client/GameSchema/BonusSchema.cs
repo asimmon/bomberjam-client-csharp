@@ -8,8 +8,8 @@
 
 using Bomberjam.Client.Colyseus.Serializer.Schema;
 
-namespace Bomberjam.Client.Game {
-	public class Bonus : Schema {
+namespace Bomberjam.Client.GameSchema {
+	internal class BonusSchema : Schema {
 		[Type(0, "int8")]
 		public int x = 0;
 

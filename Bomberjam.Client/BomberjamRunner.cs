@@ -73,7 +73,6 @@ namespace Bomberjam.Client
         {
             var newOptions = new BomberjamOptions
             {
-                Mode = this._options.Mode,
                 JsonConfigPath = this._options.JsonConfigPath,
                 BotFunc = this._options.BotFunc,
                 PlayerName = this._options.PlayerName,

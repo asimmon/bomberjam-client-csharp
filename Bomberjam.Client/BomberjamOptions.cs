@@ -3,15 +3,13 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
-using Bomberjam.Client.Game;
+using Bomberjam.Client.GameSchema;
 
 namespace Bomberjam.Client
 {
     public class BomberjamOptions
     {
-        public GameMode Mode { get; set; }
-        
-        public Func<GameState, string, GameAction> BotFunc { get; set; }
+        public Func<GameStateSchema, string, GameAction> BotFunc { get; set; }
         
         internal string JsonConfigPath { get; set; }
         
@@ -24,6 +22,11 @@ namespace Bomberjam.Client
         internal string RoomId { get; set; }
         
         internal bool IsSilent { get; set; }
+
+        internal GameMode Mode
+        {
+            get => string.IsNullOrWhiteSpace(this.RoomId) ? GameMode.Training : GameMode.Tournament;
+        }
 
         internal Uri ServerUri
         {

@@ -1,10 +1,10 @@
 ﻿using System;
 using Bomberjam.Client;
-using Bomberjam.Client.Game;
+using Bomberjam.Client.GameSchema;
 
 namespace Bomberjam.Bot
 {
-    public class Program
+    public static class Program
     {
         private static readonly Random Rng = new Random(42);
 
@@ -22,12 +22,11 @@ namespace Bomberjam.Bot
         {
             BomberjamRunner.Run(new BomberjamOptions
             {
-                Mode = GameMode.Training,
                 BotFunc = GenerateRandomAction
             });
         }
 
-        private static GameAction GenerateRandomAction(GameState state, string myPlayerId)
+        private static GameAction GenerateRandomAction(GameStateSchema state, string myPlayerId)
         {
             return AllActions[Rng.Next(AllActions.Length)];
         }

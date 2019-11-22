@@ -7,8 +7,8 @@
 
 using Bomberjam.Client.Colyseus.Serializer.Schema;
 
-namespace Bomberjam.Client.Game {
-	public class GameState : Schema {
+namespace Bomberjam.Client.GameSchema {
+	internal class GameStateSchema : Schema {
 		[Type(0, "string")]
 		public string roomId = "";
 
@@ -24,34 +24,31 @@ namespace Bomberjam.Client.Game {
 		[Type(4, "string")]
 		public string tiles = "";
 
-		[Type(5, "map", typeof(MapSchema<Player>))]
-		public MapSchema<Player> players = new MapSchema<Player>();
+		[Type(5, "map", typeof(MapSchema<PlayerSchema>))]
+		public MapSchema<PlayerSchema> players = new MapSchema<PlayerSchema>();
 
-		[Type(6, "map", typeof(MapSchema<Bomb>))]
-		public MapSchema<Bomb> bombs = new MapSchema<Bomb>();
+		[Type(6, "map", typeof(MapSchema<BombSchema>))]
+		public MapSchema<BombSchema> bombs = new MapSchema<BombSchema>();
 
-		[Type(7, "map", typeof(MapSchema<Bonus>))]
-		public MapSchema<Bonus> bonuses = new MapSchema<Bonus>();
+		[Type(7, "map", typeof(MapSchema<BonusSchema>))]
+		public MapSchema<BonusSchema> bonuses = new MapSchema<BonusSchema>();
 
-		[Type(8, "string")]
-		public string explosions = "";
-
-		[Type(9, "int8")]
+		[Type(8, "int8")]
 		public int width = 0;
 
-		[Type(10, "int8")]
+		[Type(9, "int8")]
 		public int height = 0;
 
-		[Type(11, "int16")]
+		[Type(10, "int16")]
 		public short tickDuration = 0;
 
-		[Type(12, "int16")]
+		[Type(11, "int16")]
 		public short suddenDeathCountdown = 0;
 
-		[Type(13, "boolean")]
+		[Type(12, "boolean")]
 		public bool suddenDeathEnabled = false;
 
-		[Type(14, "boolean")]
+		[Type(13, "boolean")]
 		public bool isSimulationPaused = false;
 	}
 }
