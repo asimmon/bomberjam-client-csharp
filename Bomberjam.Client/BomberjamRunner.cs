@@ -45,6 +45,9 @@ namespace Bomberjam.Client
         
         private async Task PlayInBrowserInternal()
         {
+            if (string.IsNullOrWhiteSpace(this._options.RoomId) && !IsLocalHostUri(this._options.HttpServerUri))
+                throw new InvalidOperationException("Practicing in browser without specific room ID requires server to be set to localhost in config.json");
+            
             var clients = new List<BomberjamClient>(this._playerCount);
 
             try

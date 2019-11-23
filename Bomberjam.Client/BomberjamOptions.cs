@@ -64,9 +64,6 @@ namespace Bomberjam.Client
             
             if (this.ServerPort <= 0)
                 throw new ArgumentException("Missing or invalid server port.");
-            
-            if (this.Mode == GameMode.Tournament && string.IsNullOrWhiteSpace(this.RoomId))
-                throw new ArgumentException("Missing tournament room ID.");
         }
 
         private const string JsonConfigFileName = "config.json";

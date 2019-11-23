@@ -22,21 +22,31 @@ namespace Bomberjam.Bot
 
         public static async Task Main()
         {
-            await PlayInBrowser();
-            await Simulate();
+            ParseGamelogExemple("/path/to/some.gamelog");
+            
+            await SimulateExemple();
+            
+            await PlayInBrowserExemple();
         }
 
-        private static Task PlayInBrowser()
+        private static void ParseGamelogExemple(string path)
         {
-            return BomberjamRunner.PlayInBrowser(new BomberjamOptions(GenerateRandomAction));
+            var gamelog = new Gamelog(path);
+
+            foreach (var step in gamelog)
+            {
+                Console.WriteLine(step.State.Tiles);
+            }
         }
 
-        private static async Task Simulate()
+        private static async Task SimulateExemple()
         {
             var simulation = await BomberjamRunner.StartSimulation();
             
             while (!simulation.IsFinished)
             {
+                Console.WriteLine(simulation.CurrentState.Tiles);
+                
                 var playerActions = GenerateRandomActionForAllPlayers(simulation.CurrentState);
                 simulation = await simulation.GetNext(playerActions);
             }
@@ -52,6 +62,11 @@ namespace Bomberjam.Bot
         private static GameAction GenerateRandomAction(GameState state, string myPlayerId)
         {
             return AllActions[Rng.Next(AllActions.Length)];
+        }
+
+        private static Task PlayInBrowserExemple()
+        {
+            return BomberjamRunner.PlayInBrowser(new BomberjamOptions(GenerateRandomAction));
         }
     }
 }
