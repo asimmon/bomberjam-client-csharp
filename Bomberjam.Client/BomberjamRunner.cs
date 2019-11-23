@@ -6,9 +6,14 @@ namespace Bomberjam.Client
 {
     public class BomberjamRunner
     {
-        public static void Run(BomberjamOptions options)
+        public static Task<IGameStateSimulation> StartSimulation()
         {
-            new BomberjamRunner(options).Run();
+            return new BomberjamRunner(new BomberjamOptions()).StartSimulationInternal();
+        }
+        
+        public static Task PlayInBrowser(BomberjamOptions options)
+        {
+            return new BomberjamRunner(options).PlayInBrowserInternal();
         }
         
         private readonly BomberjamOptions _options;
@@ -25,13 +30,24 @@ namespace Bomberjam.Client
             this._playerCount = this._options.Mode == GameMode.Training ? 4 : 1;
         }
 
-        private void Run()
+        private Task<IGameStateSimulation> StartSimulationInternal()
         {
-            RunAsync().GetAwaiter().GetResult();
+            if (!IsLocalHostUri(this._options.HttpServerUri))
+                throw new InvalidOperationException("Server must be set to localhost in config.json in order to use this mode");
+                    
+            return new GameStateSimulation(this._options).Start();
+        }
+
+        private static bool IsLocalHostUri(Uri uri)
+        {
+            return "localhost".Equals(uri.Host) || "127.0.0.1".Equals(uri.Host);
         }
         
-        private async Task RunAsync()
+        private async Task PlayInBrowserInternal()
         {
+            if (string.IsNullOrWhiteSpace(this._options.RoomId) && !IsLocalHostUri(this._options.HttpServerUri))
+                throw new InvalidOperationException("Practicing in browser without specific room ID requires server to be set to localhost in config.json");
+            
             var clients = new List<BomberjamClient>(this._playerCount);
 
             try
@@ -73,7 +89,6 @@ namespace Bomberjam.Client
         {
             var newOptions = new BomberjamOptions
             {
-                Mode = this._options.Mode,
                 JsonConfigPath = this._options.JsonConfigPath,
                 BotFunc = this._options.BotFunc,
                 PlayerName = this._options.PlayerName,

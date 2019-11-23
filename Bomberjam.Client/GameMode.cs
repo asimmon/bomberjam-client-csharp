@@ -1,8 +1,9 @@
 namespace Bomberjam.Client
 {
-    public enum GameMode
+    internal enum GameMode
     {
         Training,
-        Tournament
+        Tournament,
+        Simulation
     }
 }

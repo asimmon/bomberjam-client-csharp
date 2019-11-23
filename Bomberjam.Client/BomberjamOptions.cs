@@ -3,15 +3,24 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
-using Bomberjam.Client.Game;
 
 namespace Bomberjam.Client
 {
     public class BomberjamOptions
     {
-        public GameMode Mode { get; set; }
+        private static readonly Func<GameState, string, GameAction> StayBotFunc = (state, playerId) => GameAction.Stay;
         
-        public Func<GameState, string, GameAction> BotFunc { get; set; }
+        internal BomberjamOptions()
+            : this(StayBotFunc)
+        {
+        }
+        
+        public BomberjamOptions(Func<GameState, string, GameAction> botFunc)
+        {
+            this.BotFunc = botFunc;
+        }
+        
+        internal Func<GameState, string, GameAction> BotFunc { get; set; }
         
         internal string JsonConfigPath { get; set; }
         
@@ -25,9 +34,19 @@ namespace Bomberjam.Client
         
         internal bool IsSilent { get; set; }
 
-        internal Uri ServerUri
+        internal GameMode Mode
+        {
+            get => string.IsNullOrWhiteSpace(this.RoomId) ? GameMode.Training : GameMode.Tournament;
+        }
+
+        internal Uri WsServerUri
         {
             get => new Uri($"ws://{this.ServerName}:{this.ServerPort}", UriKind.Absolute);
+        }
+
+        internal Uri HttpServerUri
+        {
+            get => new Uri($"http://{this.ServerName}:{this.ServerPort}", UriKind.Absolute);
         }
 
         internal void Validate()
@@ -45,9 +64,6 @@ namespace Bomberjam.Client
             
             if (this.ServerPort <= 0)
                 throw new ArgumentException("Missing or invalid server port.");
-            
-            if (this.Mode == GameMode.Tournament && string.IsNullOrWhiteSpace(this.RoomId))
-                throw new ArgumentException("Missing tournament room ID.");
         }
 
         private const string JsonConfigFileName = "config.json";

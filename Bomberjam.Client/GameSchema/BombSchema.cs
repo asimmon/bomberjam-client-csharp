@@ -8,8 +8,8 @@
 
 using Bomberjam.Client.Colyseus.Serializer.Schema;
 
-namespace Bomberjam.Client.Game {
-	public class Bomb : Schema {
+namespace Bomberjam.Client.GameSchema {
+	internal class BombSchema : Schema {
 		[Type(0, "string")]
 		public string playerId = "";
 
