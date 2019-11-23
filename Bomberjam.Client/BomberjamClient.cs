@@ -22,7 +22,7 @@ namespace Bomberjam.Client
         {
             this._options = options;
             this._gameEndedTcs = new TaskCompletionSource<bool>();
-            this._client = new Colyseus.Client(options.ServerUri);
+            this._client = new Colyseus.Client(options.WsServerUri);
 
             this._client.OnOpen += (sender, e) =>
             {
@@ -101,24 +101,25 @@ namespace Bomberjam.Client
             }
         }
 
-        private static bool IsGameFinished(GameStateSchema state)
+        private static bool IsGameFinished(GameStateSchema stateSchema)
         {
-            return state.state == 1;
+            return stateSchema.state == 1;
         }
 
-        private async Task RunBot(GameStateSchema state)
+        private async Task RunBot(GameStateSchema stateSchema)
         {
-            if (IsGameWaitingForPlayers(state) || IsGameFinished(state) || state.isSimulationPaused)
+            if (IsGameWaitingForPlayers(stateSchema) || IsGameFinished(stateSchema) || stateSchema.isSimulationPaused)
                 return;
 
             try
             {
                 if (this._options.BotFunc != null)
                 {
+                    var state = GameState.CreateFromSchema(stateSchema);
                     var botAction = await Task.Run(() => this._options.BotFunc(state, this._sessionId));
                     var botActionStr = GameActionToString(botAction);
 
-                    await SendActionToRoom(state, botActionStr);
+                    await SendActionToRoom(stateSchema, botActionStr);
                 }
             }
             catch (Exception ex)
@@ -167,9 +168,9 @@ namespace Bomberjam.Client
 
         private void OpenGameInBrowser()
         {
-            var scheme = this._options.ServerUri.Scheme == "wss" ? "https" : "http";
-            var host = this._options.ServerUri.Host;
-            var port = this._options.ServerUri.Port;
+            var scheme = this._options.WsServerUri.Scheme == "wss" ? "https" : "http";
+            var host = this._options.WsServerUri.Host;
+            var port = this._options.WsServerUri.Port;
             var viewerUrlStr = $"{scheme}://{host}:{port}/games/{this._room.Id}";
 
             OpenInBrowser(viewerUrlStr);

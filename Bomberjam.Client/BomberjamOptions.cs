@@ -3,13 +3,24 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
-using Bomberjam.Client.GameSchema;
 
 namespace Bomberjam.Client
 {
     public class BomberjamOptions
     {
-        public Func<GameStateSchema, string, GameAction> BotFunc { get; set; }
+        private static readonly Func<GameState, string, GameAction> StayBotFunc = (state, playerId) => GameAction.Stay;
+        
+        internal BomberjamOptions()
+            : this(StayBotFunc)
+        {
+        }
+        
+        public BomberjamOptions(Func<GameState, string, GameAction> botFunc)
+        {
+            this.BotFunc = botFunc;
+        }
+        
+        internal Func<GameState, string, GameAction> BotFunc { get; set; }
         
         internal string JsonConfigPath { get; set; }
         
@@ -28,9 +39,14 @@ namespace Bomberjam.Client
             get => string.IsNullOrWhiteSpace(this.RoomId) ? GameMode.Training : GameMode.Tournament;
         }
 
-        internal Uri ServerUri
+        internal Uri WsServerUri
         {
             get => new Uri($"ws://{this.ServerName}:{this.ServerPort}", UriKind.Absolute);
+        }
+
+        internal Uri HttpServerUri
+        {
+            get => new Uri($"http://{this.ServerName}:{this.ServerPort}", UriKind.Absolute);
         }
 
         internal void Validate()

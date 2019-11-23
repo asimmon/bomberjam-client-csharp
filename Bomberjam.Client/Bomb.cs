@@ -4,33 +4,37 @@ using Newtonsoft.Json;
 namespace Bomberjam.Client
 {
     [JsonObject(MemberSerialization.OptIn)]
-    public class Bomb : IBomb
+    public class Bomb
     {
-        [JsonProperty("x")]
-        public int X  { get; set; }
+        [JsonProperty(nameof(BombSchema.x))]
+        public int X  { get; internal set; }
 
-        [JsonProperty("y")]
-        public int Y  { get; set; }
+        [JsonProperty(nameof(BombSchema.y))]
+        public int Y  { get; internal set; }
         
-        [JsonProperty("playerId")]
-        public string PlayerId  { get; set; }
+        [JsonProperty(nameof(BombSchema.playerId))]
+        public string PlayerId  { get; internal set; }
 
-        [JsonProperty("countdown")]
-        public int Countdown  { get; set; }
+        [JsonProperty(nameof(BombSchema.countdown))]
+        public int Countdown  { get; internal set; }
 
-        [JsonProperty("range")]
-        public int Range  { get; set; }
+        [JsonProperty(nameof(BombSchema.range))]
+        public int Range  { get; internal set; }
 
-        internal static Bomb FromSchema(BombSchema bomb)
+        internal static Bomb CreateFromSchema(BombSchema schema)
         {
-            return new Bomb
-            {
-                X = bomb.x,
-                Y = bomb.y,
-                PlayerId = bomb.playerId,
-                Countdown = bomb.countdown,
-                Range = bomb.range
-            };
+            return new Bomb().UpdateFromSchema(schema);
+        }
+
+        internal Bomb UpdateFromSchema(BombSchema schema)
+        {
+            this.X = schema.x;
+            this.Y = schema.y;
+            this.PlayerId = schema.playerId;
+            this.Countdown = schema.countdown;
+            this.Range = schema.range;
+
+            return this;
         }
     }
 }

@@ -4,25 +4,29 @@ using Newtonsoft.Json;
 namespace Bomberjam.Client
 {
 	[JsonObject(MemberSerialization.OptIn)]
-	public class Bonus : IBonus
+	public class Bonus
 	{
-		[JsonProperty("x")]
-		public int X  { get; set; }
+		[JsonProperty(nameof(BonusSchema.x))]
+		public int X  { get; internal set; }
 		
-		[JsonProperty("y")]
-		public int Y  { get; set; }
+		[JsonProperty(nameof(BonusSchema.y))]
+		public int Y  { get; internal set; }
 
-		[JsonProperty("type")]
-		public string Type  { get; set; }
+		[JsonProperty(nameof(BonusSchema.type))]
+		public string Type  { get; internal set; }
 		
-		internal static Bonus FromSchema(BonusSchema bonus)
+		internal static Bonus CreateFromSchema(BonusSchema schema)
 		{
-			return new Bonus
-			{
-				X = bonus.x,
-				Y = bonus.y,
-				Type = bonus.type
-			};
+			return new Bonus().UpdateFromSchema(schema);
+		}
+
+		internal Bonus UpdateFromSchema(BonusSchema schema)
+		{
+			this.X = schema.x;
+			this.Y = schema.y;
+			this.Type = schema.type;
+
+			return this;
 		}
 	}
 }
