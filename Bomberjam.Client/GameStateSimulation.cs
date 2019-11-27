@@ -10,13 +10,15 @@ namespace Bomberjam.Client
 {
     internal class GameStateSimulation : IGameStateSimulation
     {
-        private static readonly IDictionary<string, GameAction> EmptyActions = new Dictionary<string, GameAction>();
         private static readonly HttpClient _http = new HttpClient();
+        private readonly IDictionary<string, IBot> _bots;
         private readonly Uri _gameUri;
 
         public GameStateSimulation(BomberjamOptions options)
         {
-            this._gameUri = new Uri(options.HttpServerUri, $"/simulator/{Guid.NewGuid():D}");
+            var roomId = Guid.NewGuid().ToString("N").Substring(0, 9);
+            this._gameUri = new Uri(options.HttpServerUri, $"/simulator/{roomId}");
+            this._bots = new Dictionary<string, IBot>();
             this.IsFinished = false;
         }
 
@@ -26,19 +28,51 @@ namespace Bomberjam.Client
         
         public GameState CurrentState { get; private set; }
 
-        internal Task<IGameStateSimulation> Start()
+        internal async Task<IGameStateSimulation> Start(IBot[] bots)
         {
-            return GetNext(EmptyActions);
+            EnsureBotsAreNotNull(bots);
+
+            await this.ExecuteNextTick();
+
+            this.CreateBotsDictionary(bots);
+
+            return this;
         }
 
-        public async Task<IGameStateSimulation> GetNext(IDictionary<string, GameAction> playerActions)
+        private static void EnsureBotsAreNotNull(IBot[] bots)
         {
-            if (playerActions == null)
-                throw new ArgumentNullException(nameof(playerActions));
+            if (bots == null)
+                throw new ArgumentNullException(nameof(bots));
 
+            if (bots.Length != 4)
+                throw new ArgumentException($"Expected four bots, got {bots.Length} bots");
+
+            if (bots.Any(b => b == null))
+                throw new ArgumentException("One of the bots is null");
+        }
+
+        private void CreateBotsDictionary(IReadOnlyList<IBot> bots)
+        {
+            var i = 0;
+            foreach (var kvp in this.CurrentState.Players)
+            {
+                this._bots[kvp.Key] = bots[i++];
+            }
+        }
+
+        public async Task ExecuteNextTick()
+        {
             if (this.IsFinished)
                 throw new InvalidOperationException("Game is already finished");
-            
+
+            var playerActions = new Dictionary<string, GameAction>(this._bots.Count > 0 ? this._bots.Count : 1);
+
+            foreach (var kvp in this._bots)
+            {
+                var playerId = kvp.Key;
+                playerActions[playerId] = this._bots[playerId].GetAction(this.CurrentState, playerId);
+            }
+
             var currentState = await this.CallServer(playerActions);
 
             this.PreviousState = this.CurrentState;
@@ -52,8 +86,6 @@ namespace Bomberjam.Client
 
             if (this.CurrentState.State == 1)
                 this.IsFinished = true;
-
-            return this;
         }
         
         private async Task<GameState> CallServer(IDictionary<string, GameAction> actions)

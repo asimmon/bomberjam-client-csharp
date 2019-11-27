@@ -8,19 +8,17 @@ namespace Bomberjam.Client
 {
     public class BomberjamOptions
     {
-        private static readonly Func<GameState, string, GameAction> StayBotFunc = (state, playerId) => GameAction.Stay;
-        
         internal BomberjamOptions()
-            : this(StayBotFunc)
+            : this(new StayBot())
         {
         }
         
-        public BomberjamOptions(Func<GameState, string, GameAction> botFunc)
+        public BomberjamOptions(IBot bot)
         {
-            this.BotFunc = botFunc;
+            this.Bot = bot;
         }
         
-        internal Func<GameState, string, GameAction> BotFunc { get; set; }
+        internal IBot Bot { get; set; }
         
         internal string JsonConfigPath { get; set; }
         
@@ -51,7 +49,7 @@ namespace Bomberjam.Client
 
         internal void Validate()
         {
-            if (this.BotFunc == null)
+            if (this.Bot == null)
                 throw new ArgumentException("Missing bot function.");
             
             this.ParseJsonConfig();
@@ -71,8 +69,7 @@ namespace Bomberjam.Client
         private void ParseJsonConfig()
         {
             this.JsonConfigPath = LocateJsonConfigPath();
-            Console.WriteLine($"Found {JsonConfigFileName} file: {this.JsonConfigPath}");
-            
+
             JsonConfig config;
             using (var stream = File.OpenRead(this.JsonConfigPath))
                 config = JsonConfigSerializer.ReadObject(stream) as JsonConfig;
@@ -133,6 +130,14 @@ namespace Bomberjam.Client
 
             [DataMember(Name = "roomId")]
             public string RoomId { get; set; }
+        }
+
+        private sealed class StayBot : IBot
+        {
+            public GameAction GetAction(GameState state, string myPlayerId)
+            {
+                return GameAction.Stay;
+            }
         }
     }
 }

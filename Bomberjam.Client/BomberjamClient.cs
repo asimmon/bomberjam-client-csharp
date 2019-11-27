@@ -113,10 +113,10 @@ namespace Bomberjam.Client
 
             try
             {
-                if (this._options.BotFunc != null)
+                if (this._options.Bot != null)
                 {
                     var state = GameState.CreateFromSchema(stateSchema);
-                    var botAction = await Task.Run(() => this._options.BotFunc(state, this._sessionId));
+                    var botAction = await Task.Run(() => this._options.Bot.GetAction(state, this._sessionId));
                     var botActionStr = GameActionToString(botAction);
 
                     await SendActionToRoom(stateSchema, botActionStr);

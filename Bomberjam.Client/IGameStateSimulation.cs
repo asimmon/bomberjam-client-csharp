@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Bomberjam.Client
@@ -11,6 +10,6 @@ namespace Bomberjam.Client
         
         GameState CurrentState { get; }
         
-        Task<IGameStateSimulation> GetNext(IDictionary<string, GameAction> playerActions);
+        Task ExecuteNextTick();
     }
 }
