@@ -35,7 +35,8 @@ namespace Bomberjam.Bot
                 new RandomBot()
             };
 
-            var simulation = await BomberjamRunner.StartSimulation(bots);
+            const bool saveGamelog = true;
+            var simulation = await BomberjamRunner.StartSimulation(bots, saveGamelog);
             
             while (!simulation.IsFinished)
             {

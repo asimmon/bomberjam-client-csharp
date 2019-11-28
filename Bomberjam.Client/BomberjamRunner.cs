@@ -6,10 +6,10 @@ namespace Bomberjam.Client
 {
     public class BomberjamRunner
     {
-        public static Task<IGameStateSimulation> StartSimulation(IBot[] bots)
+        public static Task<IGameStateSimulation> StartSimulation(IBot[] bots, bool saveGamelog)
         {
             var options = new BomberjamOptions();
-            return new BomberjamRunner(options).StartSimulationInternal(bots);
+            return new BomberjamRunner(options).StartSimulationInternal(bots, saveGamelog);
         }
         
         public static Task PlayInBrowser(IBot bot)
@@ -32,12 +32,12 @@ namespace Bomberjam.Client
             this._playerCount = this._options.Mode == GameMode.Training ? 4 : 1;
         }
 
-        private Task<IGameStateSimulation> StartSimulationInternal(IBot[] bots)
+        private Task<IGameStateSimulation> StartSimulationInternal(IBot[] bots, bool saveGamelog)
         {
             if (!IsLocalHostUri(this._options.HttpServerUri))
                 throw new InvalidOperationException("Server must be set to localhost in config.json in order to use this mode");
                     
-            return new GameStateSimulation(this._options).Start(bots);
+            return new GameStateSimulation(this._options).Start(bots, saveGamelog);
         }
 
         private static bool IsLocalHostUri(Uri uri)

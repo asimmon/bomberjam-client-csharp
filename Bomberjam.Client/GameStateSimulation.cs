@@ -13,6 +13,7 @@ namespace Bomberjam.Client
         private static readonly HttpClient _http = new HttpClient();
         private readonly IDictionary<string, IBot> _bots;
         private readonly Uri _gameUri;
+        private bool _saveGamelog;
 
         public GameStateSimulation(BomberjamOptions options)
         {
@@ -28,9 +29,11 @@ namespace Bomberjam.Client
         
         public GameState CurrentState { get; private set; }
 
-        internal async Task<IGameStateSimulation> Start(IBot[] bots)
+        internal async Task<IGameStateSimulation> Start(IBot[] bots, bool saveGamelog)
         {
             EnsureBotsAreNotNull(bots);
+            
+            this._saveGamelog = saveGamelog;
 
             await this.ExecuteNextTick();
 
@@ -92,6 +95,12 @@ namespace Bomberjam.Client
         {
             var jsonActions = JsonConvert.SerializeObject(ToLowerStringDictionary(actions));
             using var requestBody = new StringContent(jsonActions, Encoding.UTF8, "application/json");
+            
+            if (this._saveGamelog)
+            {
+                requestBody.Headers.Add("X-SaveGamelog", "true");
+            }
+            
             using var response = await _http.PostAsync(this._gameUri, requestBody);
             
             response.EnsureSuccessStatusCode();
