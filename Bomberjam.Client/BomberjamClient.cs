@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using Bomberjam.Client.Colyseus;
 using Bomberjam.Client.GameSchema;
@@ -99,15 +100,43 @@ namespace Bomberjam.Client
             }
             else
             {
-                await this.RunBot(e.State);
+                await this.RunBotOneTickAtATime(e.State);
+            }
+        }
+
+        private int _lockStatus;
+
+        private async Task RunBotOneTickAtATime(GameStateSchema stateSchema)
+        {
+            if (IsGameWaitingForPlayers(stateSchema) || IsGameFinished(stateSchema) || stateSchema.isSimulationPaused)
+                return;
+            
+            var lockWasTaken = false;
+            
+            try
+            {
+                lockWasTaken = Interlocked.CompareExchange(ref this._lockStatus, 1, 0) == 0;
+                
+                if (lockWasTaken)
+                {
+                    await RunBot(stateSchema);
+                }
+                else
+                {
+                    this.Print($"Skipping tick {stateSchema.tick} because another thread is still processing a previous tick");
+                }
+            }
+            finally
+            {
+                if (lockWasTaken)
+                {
+                    Thread.VolatileWrite(ref this._lockStatus, 0);
+                }
             }
         }
 
         private async Task RunBot(GameStateSchema stateSchema)
         {
-            if (IsGameWaitingForPlayers(stateSchema) || IsGameFinished(stateSchema) || stateSchema.isSimulationPaused)
-                return;
-
             try
             {
                 var state = GameState.CreateFromSchema(stateSchema);
