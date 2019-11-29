@@ -15,12 +15,14 @@ namespace Bomberjam.Client
         private readonly TaskCompletionSource<bool> _gameEndedTcs;
         private readonly BomberjamOptions _options;
         private readonly Colyseus.Client _client;
+        private readonly IBot _bot;
         private Room<GameStateSchema> _room;
         private string _sessionId;
 
-        public BomberjamClient(BomberjamOptions options)
+        public BomberjamClient(BomberjamOptions options, int botIndex)
         {
             this._options = options;
+            this._bot = options.Bots[botIndex];
             this._gameEndedTcs = new TaskCompletionSource<bool>();
             this._client = new Colyseus.Client(options.WsServerUri);
 
@@ -101,11 +103,6 @@ namespace Bomberjam.Client
             }
         }
 
-        private static bool IsGameFinished(GameStateSchema stateSchema)
-        {
-            return stateSchema.state == 1;
-        }
-
         private async Task RunBot(GameStateSchema stateSchema)
         {
             if (IsGameWaitingForPlayers(stateSchema) || IsGameFinished(stateSchema) || stateSchema.isSimulationPaused)
@@ -113,19 +110,21 @@ namespace Bomberjam.Client
 
             try
             {
-                if (this._options.Bot != null)
-                {
-                    var state = GameState.CreateFromSchema(stateSchema);
-                    var botAction = await Task.Run(() => this._options.Bot.GetAction(state, this._sessionId));
-                    var botActionStr = GameActionToString(botAction);
+                var state = GameState.CreateFromSchema(stateSchema);
+                var botAction = await Task.Run(() => this._bot.GetAction(state, this._sessionId));
+                var botActionStr = GameActionToString(botAction);
 
-                    await SendActionToRoom(stateSchema, botActionStr);
-                }
+                await SendActionToRoom(stateSchema, botActionStr);
             }
             catch (Exception ex)
             {
                 this.Print($"Bot logic error occured: {Environment.NewLine}{ex}");
             }
+        }
+
+        private static bool IsGameFinished(GameStateSchema stateSchema)
+        {
+            return stateSchema.state == 1;
         }
 
         private static bool IsGameWaitingForPlayers(GameStateSchema state)

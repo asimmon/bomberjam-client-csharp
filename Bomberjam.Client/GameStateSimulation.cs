@@ -11,12 +11,15 @@ namespace Bomberjam.Client
     internal class GameStateSimulation : IGameStateSimulation
     {
         private static readonly HttpClient _http = new HttpClient();
+
+        private readonly BomberjamOptions _options;
         private readonly IDictionary<string, IBot> _bots;
         private readonly Uri _gameUri;
         private bool _saveGamelog;
 
         public GameStateSimulation(BomberjamOptions options)
         {
+            this._options = options;
             var roomId = Guid.NewGuid().ToString("N").Substring(0, 9);
             this._gameUri = new Uri(options.HttpServerUri, $"/simulator/{roomId}");
             this._bots = new Dictionary<string, IBot>();
@@ -29,37 +32,23 @@ namespace Bomberjam.Client
         
         public GameState CurrentState { get; private set; }
 
-        internal async Task<IGameStateSimulation> Start(IBot[] bots, bool saveGamelog)
+        internal async Task<IGameStateSimulation> Start(bool saveGamelog)
         {
-            EnsureBotsAreNotNull(bots);
-            
             this._saveGamelog = saveGamelog;
 
             await this.ExecuteNextTick();
 
-            this.CreateBotsDictionary(bots);
+            this.CreateBotsDictionary();
 
             return this;
         }
 
-        private static void EnsureBotsAreNotNull(IBot[] bots)
-        {
-            if (bots == null)
-                throw new ArgumentNullException(nameof(bots));
-
-            if (bots.Length != 4)
-                throw new ArgumentException($"Expected four bots, got {bots.Length} bots");
-
-            if (bots.Any(b => b == null))
-                throw new ArgumentException("One of the bots is null");
-        }
-
-        private void CreateBotsDictionary(IReadOnlyList<IBot> bots)
+        private void CreateBotsDictionary()
         {
             var i = 0;
             foreach (var kvp in this.CurrentState.Players)
             {
-                this._bots[kvp.Key] = bots[i++];
+                this._bots[kvp.Key] = this._options.Bots[i++];
             }
         }
 

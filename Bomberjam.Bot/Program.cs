@@ -8,9 +8,9 @@ namespace Bomberjam.Bot
     {
         public static async Task Main()
         {
-            ParseGamelogExample("/path/to/some.gamelog");
+            // ParseGamelogExample("/path/to/some.gamelog");
             
-            await SimulateExample();
+            // await SimulateExample();
             
             await PlayInBrowserExample();
         }
@@ -48,8 +48,15 @@ namespace Bomberjam.Bot
 
         private static Task PlayInBrowserExample()
         {
-            var bot = new RandomBot();
-            return BomberjamRunner.PlayInBrowser(bot);
+            var bots = new IBot[]
+            {
+                new RandomBot(),
+                new RandomBot(),
+                new RandomBot(),
+                new RandomBot()
+            };
+            
+            return BomberjamRunner.PlayInBrowser(bots);
         }
     }
 }

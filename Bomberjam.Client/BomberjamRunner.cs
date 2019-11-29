@@ -8,13 +8,13 @@ namespace Bomberjam.Client
     {
         public static Task<IGameStateSimulation> StartSimulation(IBot[] bots, bool saveGamelog)
         {
-            var options = new BomberjamOptions();
-            return new BomberjamRunner(options).StartSimulationInternal(bots, saveGamelog);
+            var options = new BomberjamOptions(bots);
+            return new BomberjamRunner(options).StartSimulationInternal(saveGamelog);
         }
         
-        public static Task PlayInBrowser(IBot bot)
+        public static Task PlayInBrowser(IBot[] bots)
         {
-            var options = new BomberjamOptions(bot);
+            var options = new BomberjamOptions(bots);
             return new BomberjamRunner(options).PlayInBrowserInternal();
         }
         
@@ -32,12 +32,12 @@ namespace Bomberjam.Client
             this._playerCount = this._options.Mode == GameMode.Training ? 4 : 1;
         }
 
-        private Task<IGameStateSimulation> StartSimulationInternal(IBot[] bots, bool saveGamelog)
+        private Task<IGameStateSimulation> StartSimulationInternal(bool saveGamelog)
         {
             if (!IsLocalHostUri(this._options.HttpServerUri))
                 throw new InvalidOperationException("Server must be set to localhost in config.json in order to use this mode");
                     
-            return new GameStateSimulation(this._options).Start(bots, saveGamelog);
+            return new GameStateSimulation(this._options).Start(saveGamelog);
         }
 
         private static bool IsLocalHostUri(Uri uri)
@@ -63,7 +63,7 @@ namespace Bomberjam.Client
                     if (i > 0 && !string.IsNullOrWhiteSpace(mainClient?.RoomId))
                         options.RoomId = mainClient.RoomId;
                     
-                    var client = new BomberjamClient(options);
+                    var client = new BomberjamClient(options, i);
 
                     clients.Add(client);
                     connectTasks.Add(Task.Run(client.ConnectAsync));
@@ -91,8 +91,8 @@ namespace Bomberjam.Client
         {
             var newOptions = new BomberjamOptions
             {
+                Bots = this._options.Bots,
                 JsonConfigPath = this._options.JsonConfigPath,
-                Bot = this._options.Bot,
                 PlayerName = this._options.PlayerName,
                 ServerName = this._options.ServerName,
                 ServerPort = this._options.ServerPort,

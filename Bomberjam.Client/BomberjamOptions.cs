@@ -1,24 +1,32 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Json;
+using Newtonsoft.Json;
 
 namespace Bomberjam.Client
 {
     public class BomberjamOptions
     {
+        private static readonly IBot[] StayBots =
+        {
+            new StayBot(),
+            new StayBot(),
+            new StayBot(),
+            new StayBot()
+        };
+        
         internal BomberjamOptions()
-            : this(new StayBot())
+            : this(StayBots)
         {
         }
         
-        public BomberjamOptions(IBot bot)
+        public BomberjamOptions(IBot[] bots)
         {
-            this.Bot = bot;
+            this.Bots = bots;
         }
         
-        internal IBot Bot { get; set; }
+        internal IBot[] Bots { get; set; }
         
         internal string JsonConfigPath { get; set; }
         
@@ -49,8 +57,15 @@ namespace Bomberjam.Client
 
         internal void Validate()
         {
-            if (this.Bot == null)
-                throw new ArgumentException("Missing bot function.");
+            if (this.Bots == null)
+                throw new ArgumentNullException(nameof(this.Bots));
+
+            const int expectedBotCount = 4;
+            if (this.Bots.Length != expectedBotCount)
+                throw new ArgumentException($"Expected {expectedBotCount} bots, but got {this.Bots.Length}");
+            
+            if (this.Bots.Any(b => b == null))
+                throw new ArgumentException("One of the bots is null");
             
             this.ParseJsonConfig();
             
@@ -61,7 +76,7 @@ namespace Bomberjam.Client
                 throw new ArgumentException("Missing server name.");
             
             if (this.ServerPort <= 0)
-                throw new ArgumentException("Missing or invalid server port.");
+                throw new ArgumentException("Missing or not a positive server port.");
         }
 
         private const string JsonConfigFileName = "config.json";
@@ -70,9 +85,8 @@ namespace Bomberjam.Client
         {
             this.JsonConfigPath = LocateJsonConfigPath();
 
-            JsonConfig config;
-            using (var stream = File.OpenRead(this.JsonConfigPath))
-                config = JsonConfigSerializer.ReadObject(stream) as JsonConfig;
+            var fileContents = File.ReadAllText(this.JsonConfigPath);
+            var config = JsonConvert.DeserializeObject<JsonConfig>(fileContents);
             
             if (config == null)
                 throw new ArgumentException($"The specified {JsonConfigFileName} contents is invalid. Check the documentation for a valid example.");
@@ -114,21 +128,19 @@ namespace Bomberjam.Client
             return new FileInfo(location.AbsolutePath).Directory;
         }
         
-        private static readonly DataContractJsonSerializer JsonConfigSerializer = new DataContractJsonSerializer(typeof(JsonConfig));
-
-        [DataContract]
+        [JsonObject(MemberSerialization.OptIn)]
         internal class JsonConfig
         {
-            [DataMember(Name = "playerName")]
+            [JsonProperty("playerName")]
             public string PlayerName { get; set; }
 
-            [DataMember(Name = "serverName")]
+            [JsonProperty("serverName")]
             public string ServerName { get; set; }
 
-            [DataMember(Name = "serverPort")]
+            [JsonProperty("serverPort")]
             public int ServerPort { get; set; }
 
-            [DataMember(Name = "roomId")]
+            [JsonProperty("roomId")]
             public string RoomId { get; set; }
         }
 
